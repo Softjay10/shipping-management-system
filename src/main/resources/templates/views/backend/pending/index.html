@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+<head>
+    <include th:replace="views/backend/components/metas :: metas"></include>
+    <include th:replace="views/backend/components/styles :: styles"></include>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+    <!-- navbar -->
+    <include th:replace="views/backend/components/navbar :: navbar"></include>
+    <!-- sidebar -->
+    <include th:replace="views/backend/pending/include/sidebar :: sidebar"></include>
+
+    <!-- content wrapper -->
+    <div class="content-wrapper">
+
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+<!--                        <a href="" data-toggle="modal" data-target="#add" class="btn bg-danger btn-flat"><i class="fas fa-plus-square"></i> Add Shipment</a>-->
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item active"> Pending</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Content Header (Page header) -->
+
+
+        <!-- Main content -->
+        <section class="content">
+            <!--contain table-->
+            <div class="section-body mt-3">
+                <div class="container-fluid">
+                    <div class="row clearfix">
+                        <div class="col-lg-12">
+                            <div class="card card-red card-outline">
+                                <div class="card-body">
+                                    <div class="box box-primary">
+                                        <div class="box-body">
+
+                                            <table class="table table-bordered table-hover text-center" width="100%">
+                                                <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Reference Number</th>
+                                                    <th>Customer Name</th>
+                                                    <th>Receiver Email</th>
+                                                    <th>Receiver Contact</th>
+                                                    <th>Amount</th>
+                                                    <th>Shipping Date</th>
+                                                    <th>Item Details</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <div th:if="${not #lists.isEmpty(pending)}">
+                                                    <tr th:each="row:${pending}" th:field="${row}">
+                                                        <td th:text="${row.id}"></td>
+                                                        <td th:text="${row.referenceNumber}"></td>
+                                                        <td th:text="${row.customerName}"></td>
+                                                        <td th:text="${row.receiverEmail}"></td>
+                                                        <td th:text="${row.receiverContact}"></td>
+                                                        <td th:text="${row.amount}"></td>
+                                                        <td th:text="${#dates.format(row.shippingDate,'yyyy/MM/dd')}"></td>
+                                                        <td th:text="${row.itemDetails}"></td>
+
+                                                        <td th:if="${row.status == 'pending'}"><span class="text-white bg-danger p-2 rounded">pending</span></td>
+
+                                                        <td>
+                                                            <div class="btn-group btn-group-sm">
+
+                                                                <a th:href="@{/shipments}"
+                                                                   data-toggle="modal" data-target="#editButton"
+                                                                   class="btn btn-outline-info btn-xs"><i class="fa fa-eye"></i>
+                                                                </a>
+
+<!--                                                                <a th:href="@{/delete-shipments/(id=${row.id})}"-->
+<!--                                                                   data-toggle="modal" data-target="#deleteModal" id="deleteButton"-->
+<!--                                                                   style="margin-left: 5px"-->
+<!--                                                                   class="btn btn-outline-danger btn-xs"><i class="fas fa-trash"></i></a>-->
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </div>
+                                                <div th:if="${#lists.isEmpty(pending)}">
+                                                    <tr>
+                                                        <td>No pending Exists!</td>
+                                                    </tr>
+                                                </div>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end contain table-->
+
+
+            <!-- delete modal -->
+            <div id="deleteModal" class="modal fade delete-modal animated rubberBand" role="dialog">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body text-center">
+                            <img src="../../../vendors/assets/img/sent.png" alt="" width="50" height="46">
+                            <h3>Are you sure want to delete this Records?</h3>
+                            <div class="m-t-20">
+                                <a type="#" class="btn bg-white btn-rounded" data-dismiss="modal"><i class="fa fa-times"></i> Close</a>
+                                <a type="submit" class="btn btn-outline-danger btn-rounded" id="delRef"><i class="fa fa-trash"></i>
+                                    Delete</a>
+                                <input type="hidden" name="id">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end pop up delete-->
+
+
+            <!--add modal-->
+            <div class="modal fade" id="add" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-md">
+                    <form th:action="@{/create-shipments}" method="post">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h4 class="modal-title">Add Shipments</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <div class="form-group">
+                                    <label for="referenceNumberAdd" class="col-form-label">Reference Number:</label>
+                                    <input type="text" class="form-control form-rounded" id="referenceNumberAdd" name="referenceNumber" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="shippingDateAdd" class="col-form-label">Shipping Date:</label>
+                                    <input type="date" class="form-control form-rounded" id="shippingDateAdd" name="shippingDate" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="customerNameAdd" class="col-form-label">Customer Name:</label>
+                                    <select class="form-control form-rounded" id="customerNameAdd" name="customerName" required>
+                                        <option>-SELECT-</option>
+                                        <option th:each="row:${customers}" th:value="${row.id}"
+                                                th:text="${row.firstName + ' ' + row.middleName + ' ' + row.lastName}"></option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="receiverEmailAdd" class="col-form-label">Receiver Email:</label>
+                                    <input type="text" class="form-control form-rounded" id="receiverEmailAdd" name="receiverEmail" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="receiverContactAdd" class="col-form-label">Receiver Contact:</label>
+                                    <input type="text" class="form-control form-rounded" id="receiverContactAdd" name="receiverContact" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="amountAdd" class="col-form-label">Amount:</label>
+                                    <input type="number" class="form-control form-rounded" id="amountAdd" name="amount" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="itemDetailAdd" class="col-form-label">Item Details:</label>
+                                    <textarea class="form-control" id="itemDetailAdd" name="itemDetails"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="statusAdd" class="col-form-label">Status:</label>
+                                    <select class="form-control form-rounded" id="statusAdd" name="status" required>
+                                        <option>delivered</option>
+                                        <option>pending</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i
+                                        class="fa fa-times"></i> Close
+                                </button>
+                                <button type="submit" class="btn bg-primary btn-flat">
+                                    <i class="fa fa-save"></i> Submit
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!--end add modal-->
+
+            <!--edit modal-->
+            <div class="modal fade" id="editButton" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-md">
+                    <form th:action="@{/update-shipments}" method="put">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h4 class="modal-title">Update Payments</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <div class="form-group">
+                                    <label for="idEdit" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control form-rounded" id="idEdit" name="id" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="referenceNumberEdit" class="col-form-label">Reference Number:</label>
+                                    <input type="text" class="form-control form-rounded" id="referenceNumberEdit" name="referenceNumber" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="shippingDateEdit" class="col-form-label">Shipping Date:</label>
+                                    <input type="date" class="form-control form-rounded" id="shippingDateEdit" name="shippingDate" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="customerNameEdit" class="col-form-label">Customer Name:</label>
+                                    <select class="form-control form-rounded" id="customerNameEdit" name="customerName" required>
+                                        <option value="0">-SELECT-</option>
+                                        <option th:each="row:${customers}"
+                                                th:text="${row.firstName + ' ' + row.middleName + ' ' + row.lastName}"></option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="receiverEmailEdit" class="col-form-label">Receiver Email:</label>
+                                    <input type="text" class="form-control form-rounded" id="receiverEmailEdit" name="receiverEmail" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="receiverContactEdit" class="col-form-label">Receiver Contact:</label>
+                                    <input type="text" class="form-control form-rounded" id="receiverContactEdit" name="receiverContact" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="amountEdit" class="col-form-label">Amount:</label>
+                                    <input type="number" class="form-control form-rounded" id="amountEdit" name="amount" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="itemDetailEdit" class="col-form-label">Item Detail:</label>
+                                    <textarea class="form-control" id="itemDetailEdit" name="itemDetails"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="statusEdit" class="col-form-label">Status:</label>
+                                    <select class="form-control form-rounded" id="statusEdit" name="status" required>
+                                        <option th:each="row:${shipments}" th:text="${row.status}"></option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i
+                                        class="fa fa-times"></i> Close
+                                </button>
+                                <button type="submit" class="btn bg-success btn-flat">
+                                    <i class="fa fa-save"></i> Update
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!--end edit modal-->
+
+
+        </section>
+        <!--end of main content-->
+
+    </div>
+    <!-- end content wrapper -->
+
+    <!--footer-->
+    <include th:replace="views/backend/components/footer :: footer"></include>
+
+</div>
+<include th:replace="views/backend/components/scripts :: scripts"></include>
+
+
+<!--delete modal-->
+<script>
+    /** Delete Modal **/
+    $('document').ready(function () {
+
+        /** Delete Modal **/
+        $('.table #deleteButton').on('click', function (event) {
+            event.preventDefault();
+            var href = $(this).attr('href');
+            $('#deleteModal #delRef').attr('href', href);
+            $('#deleteModal').modal();
+        });
+
+    });
+</script>
+
+<!--edit modal-->
+<script>
+
+    $('document').ready(function () {
+
+        $('.table .btn-outline-info').on('click', function (event) {
+            event.preventDefault();
+            var href = $(this).attr('href');
+            $.get(href, function (shipments) {
+                $('#idEdit').val(shipments.id);
+                $('#referenceNumberEdit').val(shipments.referenceNumber);
+
+                $('#receiverEmailEdit').val(shipments.receiverEmail);
+                $('#receiverContactEdit').val(shipments.receiverContact);
+                $('#amountEdit').val(shipments.amount);
+                $('#itemDetailEdit').val(shipments.itemDetails);
+
+                var ship = shipments.shippingDate.substr(0, 10);
+                $('#shippingDateEdit').val(ship);
+
+            });
+            $('#editModal').modal();
+        });
+    });
+</script>
+
+</body>
+</html>
